@@ -17,7 +17,7 @@ def cmdline(command):
         return process.communicate()[0]
 
 def save_gfile(p_number, name):
-    cmdline("sudo cp /var/www/html/d_imprimante"+str(p_number)+"/"+name+" /var/www/html/saves_gfiles")
+    cmdline("sudo cp /var/www/html/d_imprimante"+str(p_number)+"/"+name+" /var/www/html/archives_gfiles")
     date = str(cmdline("date +'%x'"))
     date = "d"+date[2:4]+"m"+date[5:7]+"y"+date[8:12]
     time = str(cmdline("date +'%X'"))
@@ -25,10 +25,10 @@ def save_gfile(p_number, name):
     new_name = ""
     new_name = date+"_"+time+"_printer"+str(p_number)+"_"+name
     #print (new_name)
-    cmdline("sudo mv /var/www/html/saves_gfiles/"+name+" /var/www/html/saves_gfiles/"+new_name)
+    cmdline("sudo mv /var/www/html/archives_gfiles/"+name+" /var/www/html/archives_gfiles/"+new_name)
     
 def clear_saves():
-    cmdline("sudo rm /var/www/html/saves_gfiles/*")
+    cmdline("sudo rm /var/www/html/archives_gfiles/*")
 
 
 #save_gfile(1,"imprimante.php")

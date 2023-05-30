@@ -5,4 +5,5 @@ all:
 
 clean:
 	sudo rm -drf d_imprimante*
+	sudo rm printers_infos.txt
 

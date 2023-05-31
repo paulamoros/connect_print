@@ -83,20 +83,30 @@ def printers_folders_update():
     file.write(str(listing_printers))
 
 def create_folder(p_number):
+    
     folder_name = "d_imprimante"+str(p_number)
     cmdline("mkdir "+folder_name)
+    
     cmdline("touch /var/www/html/"+folder_name+"/temp.txt")
     cmdline("sudo chmod 777 /var/www/html/"+folder_name+"/temp.txt")
     cmdline("touch /var/www/html/"+folder_name+"/status.txt")
     cmdline("sudo chmod 777 /var/www/html/"+folder_name+"/status.txt")
+    cmdline("touch /var/www/html/"+folder_name+"/timer.txt")
+    cmdline("sudo chmod 777 /var/www/html/"+folder_name+"/timer.txt")
+    
     cmdline("sudo cp /var/www/html/gen_code/imprimante.php /var/www/html/d_imprimante"+str(p_number))
     cmdline("sudo cp /var/www/html/gen_code/interface.php /var/www/html/d_imprimante"+str(p_number))
     cmdline("sudo cp /var/www/html/gen_code/piece_information.py /var/www/html/d_imprimante"+str(p_number))
     
+    cmdline("sudo cp /var/www/html/gen_code/timer.py /var/www/html/d_imprimante"+str(p_number))
+    cmdline("sudo chmod 777 /var/www/html/d_imprimante"+str(p_number)+"/timer.py")
+    cmdline("sudo mv /var/www/html/d_imprimante"+str(p_number)+"/timer.py /var/www/html/d_imprimante"+str(p_number)+"/timer"+str(p_number)+".py")    
+    
     cmdline("sudo cp /var/www/html/gen_code/print.py /var/www/html/d_imprimante"+str(p_number))
     cmdline("sudo mv /var/www/html/d_imprimante"+str(p_number)+"/print.py /var/www/html/d_imprimante"+str(p_number)+"/print"+str(p_number)+".py")
     
-    cmdline("sudo cp /var/www/html/gen_code/emergency_stop.py /var/www/html/d_imprimante"+str(p_number))
+    cmdline("sudo cp /var/www/html/gen_code/control_printer.py /var/www/html/d_imprimante"+str(p_number))
+    cmdline("sudo chmod 777 /var/www/html/d_imprimante"+str(p_number)+"/control_printer.py")
 
     #cmdline("sudo cp /var/www/html/gen_code/rw.py /var/www/html/d_imprimante"+str(p_number))
     #cmdline("sudo sed -i 's/#PRINTER_NUMBER#/"+str(p_number)+"/g' sed_remp.txt")
@@ -105,7 +115,7 @@ def create_folder(p_number):
     cmdline("sudo chmod 777 /var/www/html/d_imprimante"+str(p_number)+"/uploads/")
     #cmdline("sudo mv imprimante.php imprimante"+str(p_number)+".php")
     status = open(folder_name+"/status.txt","w")
-    status.write("not printing")
+    status.write("Free for printing")
     status.close()
     
     print("Folder n°"+str(p_number)+" created")

@@ -34,7 +34,7 @@
         }
 
         // Effectuer la mise à jour périodique toutes les 5 secondes
-        setInterval(mettreAJourContenu, 1000);
+        setInterval(mettreAJourContenu, 5000);
         
         function timer_update(){
             fetch('timer.txt')
@@ -108,26 +108,19 @@
             
             <form action="" method='POST'>
             <button class="button" type="submit" name="script" value="print">Start printing</button>
-            <button class="button" type="submit" name="script" value="emergency_stop">Stop printing (irreversible)</button>
-            <button class="button" type="submit" name="script" value="pause_resume">Pause/Resume printing</button>
-            <button class="button" type="submit" name="script" value="clean">Printer cleaned</button>
+            <button class="button" type="submit" name="script" value="emergency_stop">Process kill</button>
+            <button class="button" type="submit" name="script" value="pause">Pause printing</button>
+            <button class="button" type="submit" name="script" value="resume">Resume printing</button>
             </form>
             <?php
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $script = $_POST['script'];
                 
                 if ($script === 'print') {
-                    exec('python timer*.py > /dev/null 2>&1 &');
-                    exec('python print*.py > /dev/null 2>&1 &');
+                    shell_exec('python print*.py &');
                 }
                 if ($script === 'emergency_stop') {
-                    shell_exec('python control_printer.py stop');
-                }
-                if ($script === 'pause_resume') {
-                    shell_exec('python control_printer.py pause');
-                }
-                if ($script === 'clean') {
-                    shell_exec('python control_printer.py clean');
+                    shell_exec('emergency_stop.py');
                 }
             }
             ?>

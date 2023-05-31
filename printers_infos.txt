@@ -1,0 +1,1 @@
+[["b'Bus 001 Device 015: ID 0403:6001 Future Technology Devices International, Ltd FT232 Serial (UART) IC", "b'/dev/ttyUSB0'", "b'd_imprimante0'"], ['Bus 001 Device 005: ID 0403:6001 Future Technology Devices International, Ltd FT232 Serial (UART) IC', "b'/dev/ttyUSB1'", "b'd_imprimante1'"]]

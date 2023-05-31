@@ -17,35 +17,7 @@ def cmdline(command):
         )
         return process.communicate()[0]
 
-pause = False
-stop = False
 
-
-# Gestion des signaux pour les pauses et arrêt d'urgence demandés par l'utilisateur
-
-def handle_signal_stop(signal, frame):
-    print("Impression stopped")
-    global stop
-    status_update("Printing stopped, please clean the printer to start a new impression.")
-    stop = True
-    
-    
-def handle_signal_pause(signal, frame):
-    global pause
-    if(pause == True):
-        pause = False
-        print("Impression resumed")
-        status_update("Printing")
-    else:
-        pause = True
-        print("Impression paused")
-        status_update("Printing paused")
-    
-    
-signal.signal(signal.SIGUSR1, handle_signal_stop)
-signal.signal(signal.SIGUSR2, handle_signal_pause)
-
-#fin de la partie de gestion des pauses / arrêts
 
 def tty_lookup():
     printer_infos_file = open("../printers_infos.txt","r")
@@ -132,18 +104,7 @@ def commands_maker():
 
 
 def printing():
-    
-    # we first test if the printer is cleaned
-    
-    status_file = open("status.txt", "r")
-    status = status_file.read()
-    print (status)
-    if (status == "Printing stopped, please clean the printer to start a new impression."):
-        status_update("Can't start a new impression while te printer is not cleaned.")
-        sys.exit()
-        
-    status_file.close()
-    
+
     commands = commands_maker()
     status_update("Printing")
     
@@ -152,24 +113,6 @@ def printing():
     x=0
     
     while(x != len(commands)):
-        
-        #check de la réception des signaux d'arrêt ou de pause
-        
-        if stop == True:
-            ser.write('G92 \r\n'.encode())
-            while True:
-                line = ser.readline()
-                if (line[:2] == b'ok'):
-                    break
-            sys.exit()
-            
-        while (pause == True):
-            time.sleep(2)
-            if stop == True:
-                ser.write('G92 \r\n'.encode())
-                sys.exit()
-        
-        
         print(commands[x])
         command = commands[x]
         

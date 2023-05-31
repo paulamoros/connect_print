@@ -10,47 +10,40 @@
 
     <title>Parc 3D controller</title>
 
+    <!-- Bootstrap core CSS -->
+    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+
     <!-- Additional CSS Files -->
+
     <link rel="stylesheet" href="../assets/css/templatemo-tale-seo-agency.css">
 
     
     
     <script>        
-        
-        function convertNewlinesToBreaks(text) {
-            return text.replace(/\n/g, '<br>');
+        function status_update(){
+            fetch('status.txt')
+                .then(response => response.text())
+                .then(contenu => {
+                    document.getElementById('contenuFichier_status').textContent = contenu.trim();
+                })
+                .catch(error => {
+                    console.log('Erreur :', error);
+                });
         }
-        function getStatus() {
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    var fileContent = this.responseText;
-                    var formattedContent = convertNewlinesToBreaks(fileContent);
-                    document.getElementById('StatusContent').innerHTML = formattedContent;
-                }
-            };
-            xhttp.open('GET', 'status.txt', true);
-            xhttp.send();
+        setInterval(status_update, 1000);
+        
+        function timer_update(){
+            fetch('timer.txt')
+                .then(response => response.text())
+                .then(contenu => {
+                    document.getElementById('contenuFichier_timer').innerHTML = contenu.trim().replace(/\n/g, "<br>");
+                })
+                .catch(error => {
+                    console.log('Erreur :', error);
+                });
         }
-        
-        function getTimer() {
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    var fileContent = this.responseText;
-                    var formattedContent = convertNewlinesToBreaks(fileContent);
-                    document.getElementById('TimerContent').innerHTML = formattedContent;
-                }
-            };
-            xhttp.open('GET', 'timer.txt', true);
-            xhttp.send();
-        }
-
-        setInterval(getStatus, 1000);
-        setInterval(getTimer, 1000);
-        
-        
-        
+        setInterval(timer_update, 1000);
         
     </script>
     
@@ -65,7 +58,7 @@
             <div class="col-10">
                 <nav class="main-nav">
                     <!-- ***** Logo Start ***** -->
-                    <a href="../index.php" class="logo">
+                    <a href="../index.html" class="logo">
                         <img src="../assets/images/logo.png" alt="" style="max-width: 1012px;">
                     </a>
                     <!-- ***** Logo End ***** -->
@@ -86,7 +79,7 @@
             
             <h1>Printer status:</h1>
             
-            <div id="StatusContent"></div>
+            <div id="contenuFichier_status"></div>
             
             <style>
                 button {
@@ -107,7 +100,7 @@
             echo "<pre>$output</pre>";
             ?>
             
-            <div id="TimerContent"></div>
+            <div id="contenuFichier_timer"></div>
             
             <form action="" method='POST'>
                 <button class="button" type="submit" name="script" value="print">Start printing</button>
@@ -127,9 +120,9 @@
                     
                     
                     if ($script === 'print') {
-                        $output_print = shell_exec('python print#IMP_NB#.py > /dev/null 2>&1 &');
+                        $output_print = shell_exec('python print1.py > /dev/null 2>&1 &');
                         $output_print = nl2br($output_print);
-                        $output_timer = shell_exec('python timer#IMP_NB#.py > /dev/null 2>&1 &');
+                        $output_timer = shell_exec('python timer1.py > /dev/null 2>&1 &');
                         $output_timer = nl2br($output_timer);
                     }
                     if ($script === 'emergency_stop') {
@@ -152,5 +145,4 @@
 
 </body>
 </html>
-
 

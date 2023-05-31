@@ -22,6 +22,25 @@
         .nouveau-bouton {
             display: none;
         }
+        
+        button {
+            background-color: #228B22;
+            color: #FFFFFF;
+            font-size: 16px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .choisir-fichier {
+            background-color: #228B22;
+            color: #FFFFFF;
+            font-size: 16px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
     </style>
 
 
@@ -30,11 +49,12 @@
             var inputFile = document.querySelector('input[type="file"]');
             var message = "";
             var extension = fichier.name.split(".").pop().toLowerCase();
+            var fichier = inputFile.files[0];
             
             if (inputFile.files.length === 0) {
                 message = "Veuillez sélectionner un fichier.";
             } else {
-                var fichier = inputFile.files[0];
+                
                 if (fichier.size === 0) {
                     message = "Le fichier est vide.";
                 
@@ -65,7 +85,7 @@
             <div class="col-10">
                 <nav class="main-nav">
                     <!-- ***** Logo Start ***** -->
-                    <a href="../index.html" class="logo">
+                    <a href="../index.php" class="logo">
                         <img src="../assets/images/logo.png" alt="" style="max-width: 1012px;">
                     </a>
                     <!-- ***** Logo End ***** -->
@@ -84,8 +104,8 @@
             <h6>Command your printer</h6>
             
                 <form action="" method="POST" enctype="multipart/form-data">
-                    <input type="file" name="fichier" />
-                    <input type="submit" value="Uploader" onclick="afficherMessage()" />
+                    <input type="file" name="fichier" class="button choisir-fichier" />
+                    <input type="submit" value="Uploader" onclick="afficherMessage()" class="button"/>
                 </form>
                     
                 
@@ -119,7 +139,8 @@
                 <?php
                 if ($afficherNouveauBouton) {
                     ?>
-                    <button onclick="redirection()"> Accéder à l'interface de l'imprimante</button>
+                    <br>
+                    <button onclick="redirection()" class="button"> Accéder à l'interface de l'imprimante</button>
                     <?php
                 }
                 ?>

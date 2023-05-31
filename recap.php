@@ -20,23 +20,30 @@
 
     
     
-    <script>
-        function mettreAJourContenu() {
-            var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    var nouveauContenu = xhr.responseText;
-                    document.getElementById("contenu").textContent = nouveauContenu;
+   <script>
+   
+        function convertNewlinesToBreaks(text) {
+            return text.replace(/\n/g, '<br>');
+        }
+        function getFileContent() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var fileContent = this.responseText;
+                    var formattedContent = convertNewlinesToBreaks(fileContent);
+                    document.getElementById('fileContent').innerHTML = formattedContent;
                 }
             };
-            xhr.open("GET", "status.txt", true);
-            xhr.send();
+            xhttp.open('GET', 'recap.txt', true);
+            xhttp.send();
         }
 
-        // Effectuer la mise à jour périodique toutes les 5 secondes
-        setInterval(mettreAJourContenu, 5000);
+        setInterval(getFileContent, 1000);
     </script>
-    
+
+    <?php
+        shell_exec('python /var/www/html/recap.py')
+    ?>
     </head>
 
 <body>
@@ -48,7 +55,7 @@
             <div class="col-10">
                 <nav class="main-nav">
                     <!-- ***** Logo Start ***** -->
-                    <a href="../index.html" class="logo">
+                    <a href="index.php" class="logo">
                         <img src="../assets/images/logo.png" alt="" style="max-width: 1012px;">
                     </a>
                     <!-- ***** Logo End ***** -->
@@ -56,6 +63,28 @@
             </div>
         </div>
     </div>
+    
+    <style>
+        select {
+            background-color: #228B22;
+            color: #FFFFFF;
+            font-size: 16px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button {
+            background-color: #228B22;
+            color: #FFFFFF;
+            font-size: 16px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+
   </header>
   <!-- ***** Header Area End ***** -->
 
@@ -64,26 +93,14 @@
       <div class="row">
         <div class="col-lg-7">
           <div class="caption header-text">
-            <h6>Global view of the 3D printer fleet</h6>
-            
-            <table>
-                <tr>
-                    <th>Line 1</th>
-                    <th>Line 2</th>
-                </tr>
-                <tr>
-                    <th>Line 1</th>
-                </tr>
-                
-                <tr>
-                    <th>Line 1</th>
-                </tr>
-                
-            </table>
-            
-            
-            
-            
+          
+            <button class="button"><a style="color: white; text-decoration: none;" href="index.php">Back to printer selection page</a></button>
+            <br>
+            <br>
+            <br>
+            <h6>Global view of the 3D printer fleet</h6>    
+            <br>
+            <div id="fileContent"></div>
             
         </div>
       </div>

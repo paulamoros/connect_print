@@ -71,11 +71,11 @@
 
 <form action="" method="POST">
     <select name="printer_nb">
-<option value="0">Printer 0</option>
+#PRINTERS_OPTIONS#
         <?php
         $option = $_POST['printer_nb'];
         $redirections = array(
-'0' => 'd_imprimante0/imprimante.php',
+#REDIRECTIONS#
         // options ajoutées automatiquement par setup.py
         );
 

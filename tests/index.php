@@ -49,54 +49,52 @@
 <h4>Select <em>your printer</em> to begin <span></span></h4>
 <p>You would be allow to get informations and print your own design, do everything from your computer</a>.</p>
 <style>
-    select {
-    background-color: #228B22;
-    color: #FFFFFF;
-    font-size: 16px;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    }
-    button {
-    background-color: #228B22;
-    color: #FFFFFF;
-    font-size: 16px;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    }
+select {
+background-color: #228B22;
+color: #FFFFFF;
+font-size: 16px;
+padding: 8px 16px;
+border: none;
+border-radius: 4px;
+cursor: pointer;
+}
+button {
+background-color: #228B22;
+color: #FFFFFF;
+font-size: 16px;
+padding: 8px 16px;
+border: none;
+border-radius: 4px;
+cursor: pointer;
+}
+
 </style>
-
 <form action="" method="POST">
-    <select name="printer_nb">
-<option value="0">Printer 0</option>
-        <?php
-        $option = $_POST['printer_nb'];
-        $redirections = array(
-'0' => 'd_imprimante0/imprimante.php',
-        // options ajoutées automatiquement par setup.py
-        );
+<select name="printer_nb">
+#PRINTERS_OPTIONS#
+<?php
+$option = $_POST['printer_nb'];
+$redirections = array(
+#REDIRECTIONS#
+// options ajoutées automatiquement par setup.py
+);
 
-        if (array_key_exists($option, $redirections)) {
-        $url = $redirections[$option];
-        header('Location: ' . $url);
-        exit;
-        } elseif ($option != '' && basename($_SERVER['PHP_SELF']) != 'index.php') {
-        header('Location: index.php');
-        exit;
-        } else {
-        echo 'Redirection non valide';
-        }
+if (array_key_exists($option, $redirections)) {
+$url = $redirections[$option];
+header('Location: ' . $url);
+exit;
+} elseif ($option != '' && basename($_SERVER['PHP_SELF']) != 'index.php') {
+header('Location: index.php');
+exit;
+} else {
+echo 'Redirection non valide';
+}
 
-        ?>
-    </select>
-    <button type="submit">Let's go</button>
+?>
+</select>
+<button type="submit">Let's go</button>
 </form>
-<br>
 
-<button class="button"><a style="color: white; text-decoration: none;" href="recap.php">Printer fleet overview</a></button>
 </div>
 </div>
 </div>

@@ -20,27 +20,24 @@
 
     
     
-    <script>
-        function mettreAJourContenu() {
-            var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    var nouveauContenu = xhr.responseText;
-                    document.getElementById("contenu").textContent = nouveauContenu;
-                }
-            };
-            xhr.open("GET", "status.txt", true);
-            xhr.send();
+    <script>        
+        function status_update(){
+            fetch('status.txt')
+                .then(response => response.text())
+                .then(contenu => {
+                    document.getElementById('contenuFichier_status').textContent = contenu.trim();
+                })
+                .catch(error => {
+                    console.log('Erreur :', error);
+                });
         }
-
-        // Effectuer la mise à jour périodique toutes les 5 secondes
-        setInterval(mettreAJourContenu, 1000);
+        setInterval(status_update, 1000);
         
         function timer_update(){
             fetch('timer.txt')
                 .then(response => response.text())
                 .then(contenu => {
-                    document.getElementById('contenuFichier').textContent = contenu;
+                    document.getElementById('contenuFichier_timer').innerHTML = contenu.trim().replace(/\n/g, "<br>");
                 })
                 .catch(error => {
                     console.log('Erreur :', error);
@@ -80,7 +77,8 @@
             <h6>Printer informations</h6>
             
             <h1>Printer status:</h1>
-            <div id="contenu"></div>
+            
+            <div id="contenuFichier_status"></div>
             
             <style>
             button {
@@ -104,7 +102,7 @@
             
             </div>
             
-            <div id="contenuFichier"></div>
+            <div id="contenuFichier_timer"></div>
             
             <form action="" method='POST'>
             <button class="button" type="submit" name="script" value="print">Start printing</button>
@@ -116,9 +114,12 @@
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $script = $_POST['script'];
                 
+                
                 if ($script === 'print') {
-                    exec('python timer*.py > /dev/null 2>&1 &');
-                    exec('python print*.py > /dev/null 2>&1 &');
+                    $output_print = shell_exec('python print*.py > /dev/null 2>&1 &');
+                    $output_print = nl2br($output_print);
+                    $output_timer = shell_exec('python timer*.py > /dev/null 2>&1 &');
+                    $output_timer = nl2br($output_timer);
                 }
                 if ($script === 'emergency_stop') {
                     shell_exec('python control_printer.py stop');
@@ -132,7 +133,9 @@
             }
             ?>
             
-            
+            <div class="console">
+                <pre><?php echo $output_print; ?></pre>
+            </div>
             
         </div>
       </div>

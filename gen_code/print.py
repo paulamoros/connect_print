@@ -99,6 +99,7 @@ def one_file_check():
 def status_update(new_status):
     status = open("status.txt","w")
     status.write(new_status)
+    print("Status updated: "+new_status)
     status.close()
     
     
@@ -194,7 +195,20 @@ def printing():
                 temp_file.close()
                 
         x = x+1
-   
+        
+        if x%10 == 0:
+            percentage_done = (x/len(commands))*100
+            timer = open("timer.txt","r")
+            timer_lines = timer.readlines()
+            timer.close()
+            timer = open("timer.txt","w")
+            if len(timer_lines) == 2:
+                timer_lines[1] = "Percentage done: "+str("{:.2f}".format(percentage_done))+"%"
+                new_text = timer_lines[0]+timer_lines[1]
+                timer.write(new_text)
+            
+                
+            timer.close()
     
     time.sleep(3)
     status_update("Print finished")

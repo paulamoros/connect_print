@@ -38,11 +38,12 @@
                 if (fichier.size === 0) {
                     message = "Le fichier est vide.";
                 
-                elseif (extension !== "g") {
+                } else if (extension !== "g") {
                     message = "Seuls les fichiers G-code (.g) sont acceptés.";
                 
-                } elseif (fichier.size > 5 * 1024) {
-                    message = "Le fichier dépasse les 5 Mo maximums autorisés."
+                } else if (fichier.size > 5 * 1024) {
+                    message = "Le fichier dépasse les 5 Mo maximums autorisés.";
+                
                 } else {
                     message = "Le fichier a été téléchargé avec succès !";
                 }

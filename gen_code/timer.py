@@ -41,8 +41,15 @@ signal.signal(signal.SIGUSR2, handle_signal_pause)
         
 
 def timer_update(new_status):
+    timer = open("timer.txt", "r")
+    lines = timer.readlines()
+    print(lines)
+    timer.close()
+    
     timer = open("timer.txt", "w")
-    timer.write(new_status)
+    lines[0] = new_status
+    timer.write(lines[0]+lines[1])
+    #print("Timer updated: "+new_status)
     timer.close()
 
 
@@ -105,6 +112,9 @@ def total_sec(time_string):
             elif unit == "hr":
                 total_sec = total_sec + (value*3600)
     
+    #offset for the total printing time, due to the calibration and heating of the printer, that lasts about 2min
+    total_sec = total_sec + 220
+    
     return(total_sec)
 
 
@@ -125,6 +135,8 @@ def timer(sec_nb):
     
     time_left = sec_nb
     
+    
+    
     while(end_time > time.time()):
         
         if stop == True:
@@ -142,10 +154,11 @@ def timer(sec_nb):
         time_left = int(round(end_time)) - int(round(time.time()))
         formated_time_left = format_duration(time_left)
         
-        timer_update(str(formated_time_left))
+        timer_update("Time left: "+str(formated_time_left)+"\n")
         
         time.sleep(1)
     
+    timer_update("Printing almost finished\n")
 
 time_string = time_finder()
 

@@ -91,8 +91,12 @@ def create_folder(p_number):
     cmdline("sudo chmod 777 /var/www/html/"+folder_name+"/temp.txt")
     cmdline("touch /var/www/html/"+folder_name+"/status.txt")
     cmdline("sudo chmod 777 /var/www/html/"+folder_name+"/status.txt")
+    
     cmdline("touch /var/www/html/"+folder_name+"/timer.txt")
     cmdline("sudo chmod 777 /var/www/html/"+folder_name+"/timer.txt")
+    timer_setup = open("d_imprimante"+str(p_number)+"/timer.txt", "a")
+    timer_setup.write("Time left: Launch the printing to display the time left\nPercentage done: 0%")
+    timer_setup.close()
     
     cmdline("sudo cp /var/www/html/gen_code/imprimante.php /var/www/html/d_imprimante"+str(p_number))
     cmdline("sudo cp /var/www/html/gen_code/interface.php /var/www/html/d_imprimante"+str(p_number))

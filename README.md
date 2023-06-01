@@ -96,9 +96,12 @@ There are some other functionalities to control the printer available. The print
 
 The 'gen_code' folder contains all the generic codes copied in the printer folders, with some modifications when the codes needs to "know" in wich folder they are.
 
-
 The signal library is used to manage inter-process communication (IPC), so the print.py script can receive from control_printer.py the informations to stop, pause, or resume the printing.
 As the website user on the RPi is a normal user, it can only use the SIGUSR1 and SIGUSR2 for the IPC. Other signals can only be used by super users.
+
+To make sure when executing a print or timer script that it is not already running, a lock system locks the scripts at launch so no other process can execute them a second time. The locks files are generated in the d_imprimante/locks/ folder.
+
+For the temperature visualization, the ini_graph.py is executed in the setup.py file, to generate empty graphs in every printer folder, then the data.py script is executed in background during the printing, to generate new graphs and display the on the web interface dynamically.
 
 
 ## Common issues
@@ -110,9 +113,17 @@ No reason for this issue has been found yet.
 
 The signals handling between control_printer.py and print.py can also have issues. The buttons of stop / resume on the interface may not always work properly.
 
+If you link or unlink a printer to the Raspberry, you must execute the make clean all command to be sure that the files are regenerated correctly. But you may have to restart the Raspberry sometimes:
+For example, if you have ttyUSB0 and ttyUSB1 on the Raspberry and you unlink the ttyUSB0 printer, if you re-make the system, it will be still the ttyUSB1 that will be detected, but as there is only one printer detected, it will create only one fodler: d_imprimante0, that won't be linked to ttyUSB1. The system is broken, and a lot more isses will happend.
+
+The graph generation with plotly is a quite heavy process, that may not be the most optimal for this application. An other graphs generator, lighter, would be a better solution for this project.
+
 
 ## Next steps
 
-security
-archives management
+The next steps to achieve in this project to make it deployable on a larger scale are the following:
+  - Security: as written above, the system gives a lot of permissions on some files and scripts so they can work fine when executed by the website, so a user who knows how to introduce himself in the Raspberry folder tree could easily find ways to hack the system.
+  - Error handling: the error handling level is currently too low to be efficient.  
+  - Archives: The bases of an archives management has been setup, but not finished. The idea is to keep track of every piece printed, if an error happened, or if everything went fine.
+  - User management: The connexion of every user on the website is the biggest part that should be developped next. First, it will allow a tracking of the users printing stuff with the printers, and then an authorisation management, for example to allow administrators to execute special commands, or access all printers, no matter what is happening.
 

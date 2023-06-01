@@ -21,8 +21,8 @@ def recap_update():
         
         if len(str_temps) == 0:
             str_temp = "No temperature recorded"
-        else: 
-            str_temp = str(eval(str_temps[-1])[1])+"°C"
+        else:
+            str_temp = str(eval(str_temps[-1])[0])+"°C"
         
         recap_lines = recap_lines+"Printer n°"+folder_nb+":\nStatus: "+str_status+"\nLast recorded temperature: "+str_temp+"\n\n"
         

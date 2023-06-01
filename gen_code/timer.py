@@ -5,8 +5,20 @@ import os
 import signal
 from datetime import datetime
 from subprocess import PIPE, Popen
+import fcntl
 
+lock_file = '/var/www/html/locks/locker_'+sys.argv[0][:-3]+'.lock'
+print(lock_file)
 
+try:
+    file_handle = open(lock_file, "w")
+    fcntl.flock(file_handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+
+except IOError:
+    print("The timer script is already running.")
+    sys.exit(0)
+    
+    
 def cmdline(command):
         process = Popen(
                 args=command,
@@ -129,39 +141,49 @@ def format_duration(sec):
 
 def timer(sec_nb):
     
-    start_time = time.time()
-    
-    end_time = start_time + sec_nb
-    
-    time_left = sec_nb
-    
-    
-    
-    while(end_time > time.time()):
+    try:
+        start_time = time.time()
         
-        if stop == True:
-            timer_update("Printing stopped")
-            break
-            print("exit check")
+        end_time = start_time + sec_nb
+        
+        time_left = sec_nb
+        
+        
+        
+        while(end_time > time.time()):
             
-        elif pause == True:
+            if stop == True:
+                timer_update("Printing stopped")
+                break
+                print("exit check")
+                
+            elif pause == True:
+            
+                timer_update(str(formated_time_left+" (Paused)"))
+                while pause == True:
+                    end_time = end_time + 1.0
+                    time.sleep(1)
+            
+            time_left = int(round(end_time)) - int(round(time.time()))
+            formated_time_left = format_duration(time_left)
+            
+            timer_update("Time left: "+str(formated_time_left)+"\n")
+            
+            time.sleep(1)
         
-            timer_update(str(formated_time_left+" (Paused)"))
-            while pause == True:
-                end_time = end_time + 1.0
-                time.sleep(1)
+        timer_update("Printing almost finished\n")
         
-        time_left = int(round(end_time)) - int(round(time.time()))
-        formated_time_left = format_duration(time_left)
+    # then whatever the error is, we need to free the lock
+    finally:
+        fcntl.flock(file_handle, fcntl.LOCK_UN)
+        file_handle.close()
         
-        timer_update("Time left: "+str(formated_time_left)+"\n")
-        
-        time.sleep(1)
-    
-    timer_update("Printing almost finished\n")
 
 time_string = time_finder()
 
 total_seconds = total_sec(time_string)
 
 timer(total_seconds)
+
+fcntl.flock(file_handle, fcntl.LOCK_UN)
+file_handle.close()

@@ -99,7 +99,7 @@
                 cursor: pointer;
                 }
             </style>
-            
+            <br> <br>
             <h6>Piece to print informations</h6>
             
             <?php            
@@ -108,6 +108,13 @@
             ?>
             
             <div id="TimerContent"></div>
+            <br> <br>
+            <h6>Temperature graph</h6>
+            <iframe id="graph-frame" src="graph.html" width="800" height="600"></iframe>
+            
+            <?php
+            $output = shell_exec('ipython data#IMP_NB#.py > /dev/null 2>&1 &');
+            ?>
             
             <form action="" method='POST'>
                 <button class="button" type="submit" name="script" value="print">Start printing</button>

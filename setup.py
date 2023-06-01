@@ -92,7 +92,13 @@ def create_folder(p_number):
     # --- Printer temperature files ---#
     cmdline("touch /var/www/html/"+folder_name+"/temp.txt")
     cmdline("sudo chmod 777 /var/www/html/"+folder_name+"/temp.txt")
-
+    cmdline("sudo cp /var/www/html/gen_code/data.py /var/www/html/"+folder_name)
+    cmdline("sudo mv /var/www/html/"+folder_name+"/data.py /var/www/html/"+folder_name+"/data"+str(p_number)+".py")
+    cmdline("sudo chmod 777 /var/www/html/"+folder_name+"/data"+str(p_number)+".py")
+    
+    cmdline("sudo python ini_graph.py "+folder_name+" &")
+    cmdline("sudo chmod 777 "+folder_name+"/graph.html")
+    
 
     # --- Printer status files --- #
     cmdline("touch /var/www/html/"+folder_name+"/status.txt")
@@ -109,7 +115,7 @@ def create_folder(p_number):
     timer_setup.write("Time left: Launch the printing to display the time left\nPercentage done: 0%")
     timer_setup.close()
     
-    cmdline("sudo cp /var/www/html/gen_code/timer.py /var/www/html/d_imprimante"+str(p_number))
+    cmdline("sudo cp /var/www/html/gen_code/timer.py /var/www/html/"+folder_name)
     cmdline("sudo chmod 777 /var/www/html/d_imprimante"+str(p_number)+"/timer.py")
     cmdline("sudo mv /var/www/html/d_imprimante"+str(p_number)+"/timer.py /var/www/html/d_imprimante"+str(p_number)+"/timer"+str(p_number)+".py")    
     
@@ -136,7 +142,6 @@ def create_folder(p_number):
     # --- Recap files --- #
     cmdline("sudo touch /var/www/html/recap.txt")
     cmdline("sudo chmod 777 /var/www/html/recap.txt")
-    
     
     print("Folder n°"+str(p_number)+" created")
     

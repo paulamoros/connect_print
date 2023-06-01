@@ -7,7 +7,18 @@ import os
 import signal
 from datetime import datetime
 from subprocess import PIPE, Popen
+import fcntl
 
+lock_file = '/var/www/html/locks/locker_'+sys.argv[0][:-3]+'.lock'
+print(lock_file)
+
+try:
+    file_handle = open(lock_file, "w")
+    fcntl.flock(file_handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+
+except IOError:
+    print("The print script is already running.")
+    sys.exit(0)
 
 def cmdline(command):
         process = Popen(
@@ -21,7 +32,7 @@ pause = False
 stop = False
 
 
-# Gestion des signaux pour les pauses et arrêt d'urgence demandés par l'utilisateur
+# Signals handling for the commands of printer pausing and stopping 
 
 def handle_signal_stop(signal, frame):
     print("Impression stopped")
@@ -133,85 +144,118 @@ def commands_maker():
 
 
 def printing():
-    
-    # we first test if the printer is cleaned
-    
-    status_file = open("status.txt", "r")
-    status = status_file.read()
-    print (status)
-    if (status == "Printing stopped, please clean the printer to start a new impression."):
-        status_update("Can't start a new impression while te printer is not cleaned.")
-        sys.exit()
+
+    try:
+        # we test if the printer is cleaned
         
-    status_file.close()
-    
-    commands = commands_maker()
-    status_update("Printing")
-    
-    print(commands[0:10])
-    
-    x=0
-    
-    while(x != len(commands)):
-        
-        #check de la réception des signaux d'arrêt ou de pause
-        
-        if stop == True:
-            ser.write('G92 \r\n'.encode())
-            while True:
-                line = ser.readline()
-                if (line[:2] == b'ok'):
-                    break
+        status_file = open("status.txt", "r")
+        status = status_file.read()
+        print (status)
+        if (status == "Printing stopped, please clean the printer to start a new impression."):
+            status_update("Can't start a new impression while te printer is not cleaned.")
             sys.exit()
             
-        while (pause == True):
-            time.sleep(2)
+        status_file.close()
+        
+        commands = commands_maker()
+        status_update("Printing")
+        
+        print(commands[0:10])
+        
+        x=0
+        
+        while(x != len(commands)):
+            
+            #check de la réception des signaux d'arrêt ou de pause
+            
             if stop == True:
                 ser.write('G92 \r\n'.encode())
+                while True:
+                    line = ser.readline()
+                    if (line[:2] == b'ok'):
+                        break
                 sys.exit()
-        
-        
-        print(commands[x])
-        command = commands[x]
-        
-        ser.write(str.encode(command))
-        while True:
-            line = ser.readline()
-            print (line)
-            if (line[:2] == b'ok' or line[:1]==b'X'):
                 
-                break
+            while (pause == True):
+                time.sleep(2)
+                if stop == True:
+                    ser.write('G92 \r\n'.encode())
+                    sys.exit()
             
-            elif (line[1:3] == b'T:'):
-                
-                temp_infos = str(line).split(" ")
-                temp = temp_infos[1][2:]
-                abs_time = time.time()
-                line = "["+temp+" , "+str(abs_time)+"]"
-                print(line)
-                
-                temp_file = open('temp.txt', 'a')
-                temp_file.write(str(line)+"\n")
-                temp_file.close()
-                
-        x = x+1
-        
-        if x%10 == 0:
-            percentage_done = (x/len(commands))*100
-            timer = open("timer.txt","r")
-            timer_lines = timer.readlines()
-            timer.close()
-            timer = open("timer.txt","w")
-            if len(timer_lines) == 2:
-                timer_lines[1] = "Percentage done: "+str("{:.2f}".format(percentage_done))+"%"
-                new_text = timer_lines[0]+timer_lines[1]
-                timer.write(new_text)
             
+            print(commands[x])
+            command = commands[x]
+            
+            ser.write(str.encode(command))
+            while True:
+                line = ser.readline()
+                print (line)
+                if (line[:2] == b'ok' or line[:1]==b'X'):
+                    
+                    break
                 
-            timer.close()
+                elif (line[1:3] == b'T:'):
+                    
+                    temp_infos = str(line).split(" ")
+                    temp = temp_infos[1][2:]
+                    abs_time = time.time()
+                    line = "["+temp+" , "+str(abs_time)+"]"
+                    print(line)
+                    
+                    temp_file = open('temp.txt', 'a')
+                    temp_file.write(str(line)+"\n")
+                    temp_file.close()
+                    
+            x = x+1
+            
+            if x%10 == 0:
+                # timer update every 10 gcode commande
+                percentage_done = (x/len(commands))*100
+                timer = open("timer.txt","r")
+                timer_lines = timer.readlines()
+                timer.close()
+                timer = open("timer.txt","w")
+                if len(timer_lines) == 2:
+                    timer_lines[1] = "Percentage done: "+str("{:.2f}".format(percentage_done))+"%"
+                    new_text = timer_lines[0]+timer_lines[1]
+                    timer.write(new_text)
+            
+                timer.close()
+                
+                #then, temperature gathering every 10 gcode commands
+                
+                print("temperature command sending")
+                ser.write(temp_command)
+                while True:
+                    line = ser.readline()
+                    print (line)
+                    
+                    if (line[:5] == b'ok T:' or line[:1]==b'X'):
+                        break
+                    
+                
+                if(line[:5] == b'ok T:'):
+                    temp_infos = str(line).split(" ")
+                    temp = temp_infos[1][2:]
+                    abs_time = time.time()
+                    line = "["+temp+" , "+str(abs_time)+"]"
+                    print(line)
+                    
+                    temp_file = open('temp.txt', 'a')
+                    temp_file.write(str(line)+"\n")
+                    temp_file.close()
+                    print("temperature gathering finished")
+                
+                
+        
+        time.sleep(3)
+        status_update("Print finished")
     
-    time.sleep(3)
-    status_update("Print finished")
-    
+    # then whatever the error is, we need to free the lock
+    finally:
+        fcntl.flock(file_handle, fcntl.LOCK_UN)
+        file_handle.close()
 
 printing()
+
+

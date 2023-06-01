@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+#This script is used to format the status and temperature informations about the printers, using for each printer the files status.txt and temp.txt
 def recap_update():
     recap_lines = ""
     

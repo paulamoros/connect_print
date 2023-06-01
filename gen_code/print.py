@@ -9,6 +9,7 @@ from datetime import datetime
 from subprocess import PIPE, Popen
 import fcntl
 
+#We need a lock to make sure we can't execute duplicate copy of this script
 lock_file = '/var/www/html/locks/locker_'+sys.argv[0][:-3]+'.lock'
 print(lock_file)
 
@@ -56,9 +57,10 @@ def handle_signal_pause(signal, frame):
 signal.signal(signal.SIGUSR1, handle_signal_stop)
 signal.signal(signal.SIGUSR2, handle_signal_pause)
 
-#fin de la partie de gestion des pauses / arrêts
+
 
 def tty_lookup():
+    #To know on which ttyUSBX we can send the g-code commande, we must find out which one is linked to the folder in which this script belongs
     printer_infos_file = open("../printers_infos.txt","r")
     printer_infos = eval(printer_infos_file.read())
     
@@ -86,6 +88,8 @@ gfiles = cmdline("ls uploads/")
 gfiles_list = [str(i) for i in gfiles.split(b'\n')]
 gfiles_list.pop()
 
+
+#In g-code, the command that asks the printer to send back on the serial link its temperature is M105
 temp_command = 'M105\n'.encode()
 
 
@@ -93,11 +97,11 @@ def one_file_check():
     
     val = 1
     if (len(gfiles_list) > 1):
-        print("Multiple gcode files detected.")
+        print("Multiple g-code files detected.")
         val = 1
         
     elif (len(gfiles_list) == 0):
-        print("No gcode file detected.")
+        print("No g-code file detected.")
         val = 1
         
     else:
@@ -105,6 +109,7 @@ def one_file_check():
         val = 0
         
     return val
+    
     
     
 def status_update(new_status):
@@ -116,7 +121,7 @@ def status_update(new_status):
     
 
 def commands_maker():
-    
+    #This script creates a list of commands from the g-code file, so they can be sent one by one by the printing() function just below
     commands = []
     if(one_file_check() == 0):
         gfile_name = "uploads/" + gfiles_list[0][2:-1]
@@ -166,8 +171,7 @@ def printing():
         
         while(x != len(commands)):
             
-            #check de la réception des signaux d'arrêt ou de pause
-            
+            #If a stop signal has been detected, the global variable "stop" is set en True, and we want to end the process
             if stop == True:
                 ser.write('G92 \r\n'.encode())
                 while True:
@@ -176,6 +180,7 @@ def printing():
                         break
                 sys.exit()
                 
+            #If a pause signal has been detected, the global variable "pause" is set on True, and we want to pause the process
             while (pause == True):
                 time.sleep(2)
                 if stop == True:
@@ -183,17 +188,22 @@ def printing():
                     sys.exit()
             
             
+            #Then, we want the following command to be sent
             print(commands[x])
             command = commands[x]
             
+            #We write it on the serial link
             ser.write(str.encode(command))
+            
+            #And we wait a response from the printer... "ok" is mainly received when the command was correctly executed
             while True:
                 line = ser.readline()
                 print (line)
-                if (line[:2] == b'ok' or line[:1]==b'X'):
-                    
+                
+                if (line[:2] == b'ok' or line[:1]==b'X'): 
                     break
                 
+                #If the command sends back a temperature, we want to gather it and put it in temp.txt
                 elif (line[1:3] == b'T:'):
                     
                     temp_infos = str(line).split(" ")
@@ -205,11 +215,13 @@ def printing():
                     temp_file = open('temp.txt', 'a')
                     temp_file.write(str(line)+"\n")
                     temp_file.close()
-                    
+            
+            
             x = x+1
             
             if x%10 == 0:
-                # timer update every 10 gcode commande
+                
+                #The timer update happens every 10 g-code commande
                 percentage_done = (x/len(commands))*100
                 timer = open("timer.txt","r")
                 timer_lines = timer.readlines()
@@ -222,8 +234,8 @@ def printing():
             
                 timer.close()
                 
-                #then, temperature gathering every 10 gcode commands
                 
+                #Then, temperature gathering every 10 gcode commands
                 print("temperature command sending")
                 ser.write(temp_command)
                 while True:
@@ -233,7 +245,7 @@ def printing():
                     if (line[:5] == b'ok T:' or line[:1]==b'X'):
                         break
                     
-                
+                #Next part is used to gather the temperature when asked to the printer by the part above
                 if(line[:5] == b'ok T:'):
                     temp_infos = str(line).split(" ")
                     temp = temp_infos[1][2:]

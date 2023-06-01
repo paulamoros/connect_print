@@ -18,34 +18,32 @@ def cmdline(command):
 
 def printers_folders_update():
     
-    #on collecte les ttyUSB connectés
+    #we check the ttyUSBX detected
     tty = cmdline("ls /dev/ttyUSB*")
     tty_list = [str(i) for i in tty.split(b'\n')]
     del tty_list[-1]
-    print("Liste des imprimantes connectées: ",tty_list)
+    print("Connected printers: ",tty_list)
     
-    #on vérifie maintenant les dossiers des imprimantes
+    #on check the printer folders that already exists
     folders = cmdline("ls | grep d_imprimante")
     folders_list = []
     folders_list = [str(j) for j in folders.split(b'\n')]
     del folders_list[-1]
-    print("Liste des dossiers d'imprimantes: ",folders_list)
+    print("Printer folders detected: ",folders_list)
     
-    #on regarde enfin si le nombre d'imprimantes détectées correspond au nombre de dossiers d'imprimantes
-    
+    #then, we check if the number of printers detected is equal to the number of existing printer folders, if not, we correct this
     tty_number_list = []
+
     if len(folders_list) != len(tty_list):
-        print("\nNombre de dossiers différent du nombre d'imprimantes détectées")
-        #s'il y a une différence, on corrige cela
+        print("\nNumber of printer folders different than the number of printers detected")
         
-        
-        #on créé d'abord des répertoires pour les tty en plus
+        #if some folders are missing, we create them
         for i in tty_list:
             tty_number = i[13:-1]
             tty_number_list.append(int(tty_number))
             create_folder(int(tty_number))
             
-        #on supprime ensuite les répertoires en trop (qui n'ont pas de tty associé)
+        #the we delete folders that have no associated ttyUSBX
         for i in folders_list:
             folder_number = int(i[14:-1])
             if folder_number not in tty_number_list:
@@ -55,12 +53,12 @@ def printers_folders_update():
         folders_list = []
         folders_list = [str(j) for j in folders.split(b'\n')]
         del folders_list[-1]
-        print("\nNouvelle liste des dossiers d'imprimantes: ",folders_list)
+        print("\nNew list of printer folders: ",folders_list)
         
     else:
-        print("Nombre d'imprimantes branchées = Nombre de dossiers d'imprimantes")
+        print("Number of printers linked = Number of printer folders")
         
-    print("\nMise à jour du listing des imprimantes...\n")
+    print("\nUpdating the printers listing...\n")
     names = cmdline("lsusb | grep Future")
     names_list = []
     
@@ -83,6 +81,9 @@ def printers_folders_update():
     file.write(str(listing_printers))
 
 def create_folder(p_number):
+    #This function uses the bash commands to create all the intern file tree on the Raspberry for the printer management
+    #Most of the commands are about copying the generic scripts from gen_code/, modify them when needed and change the authorizations of the files.
+    #It is required to execute this function of this script with admin rights
     
     # --- Folder creation --- #
     folder_name = "d_imprimante"+str(p_number)
@@ -139,15 +140,18 @@ def create_folder(p_number):
     cmdline("sudo mkdir /var/www/html/d_imprimante"+str(p_number)+"/uploads/")
     cmdline("sudo chmod 777 /var/www/html/d_imprimante"+str(p_number)+"/uploads/")
     
+    
     # --- Recap files --- #
     cmdline("sudo touch /var/www/html/recap.txt")
     cmdline("sudo chmod 777 /var/www/html/recap.txt")
+    
     
     print("Folder n°"+str(p_number)+" created")
     
 
 
 def force_reset():
+    #The force reset deletes automatically all the printer folders to regenerate all of the
     folder_nb = int(cmdline("ls | grep d_imprimante | wc -l"))
     for i in range (folder_nb):
         print("sudo rm -dr d_imprimante"+str(i))
@@ -158,6 +162,7 @@ def force_reset():
     
 def index_update():
     
+    #the index.php file must be modified to display the right number of available printers on the drop-down menu, and to create the right redirections
     cmdline("sudo rm /var/www/html/index.php")
     printers_options = ""
     option = ""
@@ -167,6 +172,7 @@ def index_update():
     printers_infos = open("/var/www/html/printers_infos.txt","r")
     printers_list = eval(printers_infos.readlines()[0])
     
+    #The next loop generates the html code depending on the right number of printers that will be added to index.php
     for i in range(len(printers_list)):
         option = "<option value=\""+str(i)+"\">Printer "+str(i)+ "</option>\n"
         printers_options = printers_options + option
@@ -184,6 +190,7 @@ def index_update():
     
     for i in range(len(index_lines)):
         
+        #as some complex issues while using a sed command happened, a hand made sed was created to go around these special characters interpreting issues
         if index_lines[i] == "#PRINTERS_OPTIONS#\n":
             new_index.write(new_lines)
             new_lines = ""

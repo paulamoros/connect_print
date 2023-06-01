@@ -6,6 +6,8 @@ import fcntl
  
 lock_file = os.path.abspath(__file__)
 
+# The try-exept is used to detect is the script is already running, and if it is, not executing a duplicate, using a lock
+
 try:
     file_handle = open(lock_file, "w")
     fcntl.flock(file_handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -13,6 +15,7 @@ try:
 except IOError:
     print("The data script is already running.")
     sys.exit(0)
+    
     
 # Read temperature data from text file
 def read_temperature_data():
@@ -42,6 +45,7 @@ def read_temperature_data():
         
 
 # Create graph with Plotly
+
 def update_graph():
     df = read_temperature_data()
     print(df)

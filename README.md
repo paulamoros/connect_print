@@ -122,8 +122,8 @@ The graph generation with plotly is a quite heavy process, that may not be the m
 ## Next steps
 
 The next steps to achieve in this project to make it deployable on a larger scale are the following:
+  - Information management: The management of the temperature is currently very basic, a way to clean the temp.txt file between each printing will be required for a better management of the printers
   - Security: as written above, the system gives a lot of permissions on some files and scripts so they can work fine when executed by the website, so a user who knows how to introduce himself in the Raspberry folder tree could easily find ways to hack the system.
   - Error handling: the error handling level is currently too low to be efficient.  
   - Archives: The bases of an archives management has been setup, but not finished. The idea is to keep track of every piece printed, if an error happened, or if everything went fine.
   - User management: The connexion of every user on the website is the biggest part that should be developped next. First, it will allow a tracking of the users printing stuff with the printers, and then an authorisation management, for example to allow administrators to execute special commands, or access all printers, no matter what is happening.
-

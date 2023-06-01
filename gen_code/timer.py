@@ -7,6 +7,9 @@ from datetime import datetime
 from subprocess import PIPE, Popen
 import fcntl
 
+
+#We fist create a lock that will be used to make sure we don't duplicate the execution of this script
+
 lock_file = '/var/www/html/locks/locker_'+sys.argv[0][:-3]+'.lock'
 print(lock_file)
 
@@ -32,6 +35,8 @@ pause = False
 stop = False
 
 
+#The signals handlers detects when the control_printer.py script sends a signal if the user clicks a "pause/resume" or "stop" button
+
 def handle_signal_stop(signal, frame):
     print("Timer stopped")
     global stop
@@ -53,6 +58,8 @@ signal.signal(signal.SIGUSR2, handle_signal_pause)
         
 
 def timer_update(new_status):
+    #Just a function to write new data in timer.txt
+    
     timer = open("timer.txt", "r")
     lines = timer.readlines()
     print(lines)
@@ -61,7 +68,6 @@ def timer_update(new_status):
     timer = open("timer.txt", "w")
     lines[0] = new_status
     timer.write(lines[0]+lines[1])
-    #print("Timer updated: "+new_status)
     timer.close()
 
 
@@ -71,7 +77,6 @@ def time_finder():
     
     gfiles_list = [str(i) for i in gfiles.split(b'\n')]
     gfiles_list.pop()
-    
     
     if (len(gfiles_list) > 1):
         print("Multiple gcode files detected.")
@@ -97,13 +102,13 @@ def time_finder():
                 duration_found = True
             
         if duration_found == False:
-            print("no duration information found.")
+            print("No duration information found.")
     
     return duration
 
 
 def total_sec(time_string):
-    
+    #This function converts the time duration string detected in the g-file code into an int number of seconds
     total_sec = 0
     
     time_sep = [str(i) for i in time_string.split(' ')]
@@ -124,7 +129,7 @@ def total_sec(time_string):
             elif unit == "hr":
                 total_sec = total_sec + (value*3600)
     
-    #offset for the total printing time, due to the calibration and heating of the printer, that lasts about 2min
+    #We add an offset to the total printing time, due to the calibration and heating of the printer, that lasts about 2min
     total_sec = total_sec + 220
     
     return(total_sec)
@@ -132,6 +137,7 @@ def total_sec(time_string):
 
 
 def format_duration(sec):
+    #This function formats the number of seconds in HH:MM:SS
     hours = sec//3600
     minutes = (sec % 3600) // 60
     seconds = sec % 60
@@ -140,6 +146,7 @@ def format_duration(sec):
 
 
 def timer(sec_nb):
+    #This functions runs the timer and updates the timer.txt file to display the timer on the website
     
     try:
         start_time = time.time()

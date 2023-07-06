@@ -156,7 +156,7 @@ def printing():
         status_file = open("status.txt", "r")
         status = status_file.read()
         print (status)
-        if (status == "Printing stopped, please clean the printer to start a new impression."):
+        if (status == "Printing stopped, please clean the printer to start a new impression." or status == "Printing finished"):
             status_update("Can't start a new impression while te printer is not cleaned.")
             sys.exit()
             

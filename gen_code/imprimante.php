@@ -52,20 +52,20 @@
             var fichier = inputFile.files[0];
             
             if (inputFile.files.length === 0) {
-                message = "Veuillez sélectionner un fichier.";
+                message = "Please choose a g-file.";
             } else {
                 
                 if (fichier.size === 0) {
-                    message = "Le fichier est vide.";
+                    message = "File is empty.";
                 
                 } else if (extension !== "g") {
-                    message = "Seuls les fichiers G-code (.g) sont acceptés.";
+                    message = "Only g-code file (.g) are allowed.";
                 
                 } else if (fichier.size > 5 * 1024) {
-                    message = "Le fichier dépasse les 5 Mo maximums autorisés.";
+                    message = "The file exceeds the 5 Mo authorized.";
                 
                 } else {
-                    message = "Le fichier a été téléchargé avec succès !";
+                    message = "File successfuly downloaded !";
                 }
             }
             alert(message);
@@ -123,16 +123,16 @@
                     $extension = strtolower(pathinfo($nomFichier, PATHINFO_EXTENSION));
                     
                     if($extension != "g") {
-                        $message = "Seuls les fichiers G-code (.g) sont autorisés.";
+                        $message = "Only g-code files (.g) are allowed.";
                         echo "Seuls les fichiers G-code (.g) sont autorisés.";
                     } elseif ($_FILES['fichier']['size'] >= 5 * 1024 * 1024) {
-                        $message = "La taille du fichier dépasse la limite autorisée.";
-                        echo "La taille du fichier dépasse la limite autorisée.";
+                        $message = "The file size is too big.";
+                        echo "The file size is too big.";
                     } elseif(move_uploaded_file($nomTemporaire, $destination)) {
                         $afficherNouveauBouton =  true;
-                        echo "Le fichier a été correctement téléchargé.\n";
+                        echo "File downloaded successfuly.\n";
                     } else {
-                        echo "Un problème lors de l'upload est survenu.";    
+                        echo "An issue happened during the upload.";    
                     }
                 } 
                 ?>
@@ -140,7 +140,7 @@
                 if ($afficherNouveauBouton) {
                     ?>
                     <br>
-                    <button onclick="redirection()" class="button"> Accéder à l'interface de l'imprimante</button>
+                    <button onclick="redirection()" class="button"> Go to printer interface</button>
                     <?php
                 }
                 ?>

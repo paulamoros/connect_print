@@ -2,6 +2,7 @@
 
 A project for the Fabricarium of Polytech Lille
 
+
 ## Context
 
 This projet was suggested by the Fabricarium of Polytech Lille to embedded systems speciality students as a 3rd and 4th year projet.
@@ -10,6 +11,7 @@ This is the new version, worked from may to june 2023, with basic control and mo
 All the code has been written and tested on a Raspberry, that hosts the website to remotely control the 3D printers, connected to the RPi with USB serial link.
 On the Raspberry, all the control, data gathering, and overall management of the system is written is Python, the website uses PHP code, with some Javascript parts
 The printers used to develop this projet are Dagomas printers. Some issues could happen if other printer models are used, as no tests have been made on other models.
+
 
 ## Usage
 
@@ -20,7 +22,7 @@ When changes are made in some scripts, or when the number of printer linked to t
 
 Some libraries and packages must be installed on the Raspberry to have the system working as:
   - lighttpd as a webserver (you must also configure it)
-  - pandas and plotly to manage the temperature datas and render it
+  - pandas and plotly to manage the temperature data and render it
   - php and javascript to execute the server-parts of the webpages codes
   - other packages may be required, check the error messages to see which ones, I may have forgotten some
   
@@ -86,11 +88,13 @@ shell_exec('script.py > /dev/null 2>&1 &');
 The print.py script takes in charge the update of the printer status, written in status.txt. The different status modes are:
   - Free for printing
   - Printing
-  - Stopped
+  - Printing paused
+  - Printing stopped
   - Print finished
 
 The script can be executed only when the printer is free for printing. When print.py is executed, the status changes into "Printing". When the printing is finished, the status changes to "Print finished".
 There are some other functionalities to control the printer available. The print process can be killed, clicking the "Stop printing" button, or simply paused or resumed with the 
+
 
 ## System
 
@@ -117,6 +121,8 @@ If you link or unlink a printer to the Raspberry, you must execute the make clea
 For example, if you have ttyUSB0 and ttyUSB1 on the Raspberry and you unlink the ttyUSB0 printer, if you re-make the system, it will be still the ttyUSB1 that will be detected, but as there is only one printer detected, it will create only one fodler: d_imprimante0, that won't be linked to ttyUSB1. The system is broken, and a lot more isses will happend.
 
 The graph generation with plotly is a quite heavy process, that may not be the most optimal for this application. An other graphs generator, lighter, would be a better solution for this project.
+
+When pausing/resuming the printing, the timer and the percentage progression disappears. The timerX.py process looks killed when resuming it.
 
 
 ## Next steps

@@ -1,0 +1,8 @@
+Printer n°0:
+Status: Free for printing
+Last recorded temperature: No temperature recorded
+
+Printer n°1:
+Status: Free for printing
+Last recorded temperature: No temperature recorded
+

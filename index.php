@@ -71,9 +71,13 @@
 
 <form action="" method="POST">
     <select name="printer_nb">
+<option value="0">Printer 0</option>
+<option value="1">Printer 1</option>
         <?php
         $option = $_POST['printer_nb'];
         $redirections = array(
+'0' => 'd_imprimante0/imprimante.php',
+'1' => 'd_imprimante1/imprimante.php',
         // options ajoutées automatiquement par setup.py
         );
 

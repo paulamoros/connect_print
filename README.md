@@ -90,7 +90,7 @@ The print.py script takes in charge the update of the printer status, written in
   - Printing
   - Printing paused
   - Printing stopped
-  - Print finished
+  - Printing finished
 
 The script can be executed only when the printer is free for printing. When print.py is executed, the status changes into "Printing". When the printing is finished, the status changes to "Print finished".
 There are some other functionalities to control the printer available. The print process can be killed, clicking the "Stop printing" button, or simply paused or resumed with the 

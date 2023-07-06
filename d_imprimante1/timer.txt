@@ -1,0 +1,2 @@
+Time left: Launch the printing to display the time left
+Percentage done: 0%

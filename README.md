@@ -118,7 +118,7 @@ No reason for this issue has been found yet.
 The signals handling between control_printer.py and print.py can also have issues. The buttons of stop / resume on the interface may not always work properly.
 
 If you link or unlink a printer to the Raspberry, you must execute the make clean all command to be sure that the files are regenerated correctly. But you may have to restart the Raspberry sometimes:
-For example, if you have ttyUSB0 and ttyUSB1 on the Raspberry and you unlink the ttyUSB0 printer, if you re-make the system, it will be still the ttyUSB1 that will be detected, but as there is only one printer detected, it will create only one fodler: d_imprimante0, that won't be linked to ttyUSB1. The system is broken, and a lot more isses will happend.
+For example, if you have ttyUSB0 and ttyUSB1 on the Raspberry and you unlink the ttyUSB0 printer, if you re-make the system, it will be still the ttyUSB1 that will be detected, but as there is only one printer detected, it will create only one folder: d_imprimante0, that won't be linked to ttyUSB1. The system is broken, and a lot more isses will happend.
 
 The graph generation with plotly is a quite heavy process, that may not be the most optimal for this application. An other graphs generator, lighter, would be a better solution for this project.
 
